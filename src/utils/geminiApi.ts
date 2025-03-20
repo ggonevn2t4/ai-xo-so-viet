@@ -2,7 +2,7 @@
 // Gemini API utility for AI functionalities
 
 // API key for Gemini Pro 1.5
-const GEMINI_API_KEY = "AIzaSyB9fWEACDCDoFtgMqk8Ke7SZ70VzO0t0NQ";
+const GEMINI_API_KEY = "AIzaSyD3ih3kH9V1CSqmWHRo54xBINJpi9XJky4";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
 
 export interface GeminiResponse {
