@@ -1,8 +1,9 @@
 
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Info } from 'lucide-react';
 import { interpretDreamWithGemini } from '@/utils/geminiApi';
 import { useToast } from '@/components/ui/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const DreamForm = () => {
   const [dreamText, setDreamText] = useState('');
@@ -10,6 +11,7 @@ const DreamForm = () => {
   const [interpretation, setInterpretation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [usingFallback, setUsingFallback] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,6 +20,7 @@ const DreamForm = () => {
 
     setIsLoading(true);
     setHasSearched(true);
+    setUsingFallback(false);
 
     try {
       // Use Gemini API to interpret the dream
@@ -25,17 +28,38 @@ const DreamForm = () => {
       
       setResults(geminiResponse.numbers);
       setInterpretation(geminiResponse.text);
+      
+      // Check if we're using the fallback by looking at common fallback texts
+      const fallbackTexts = [
+        "Giấc mơ ngắn gọn của bạn thường liên quan đến",
+        "Giấc mơ của bạn phản ánh trạng thái cảm xúc hiện tại",
+        "Giấc mơ chi tiết này phản ánh sự phức tạp",
+        "Không thể phân tích giấc mơ"
+      ];
+      
+      const isFallback = fallbackTexts.some(text => geminiResponse.text.includes(text));
+      setUsingFallback(isFallback);
+      
+      if (isFallback) {
+        toast({
+          title: "Chú ý",
+          description: "Hệ thống đang sử dụng chế độ phân tích offline do API Gemini đã đạt giới hạn truy cập.",
+          variant: "default",
+        });
+      }
+      
       setIsLoading(false);
     } catch (error) {
       console.error("Error interpreting dream:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể kết nối với dịch vụ AI. Vui lòng thử lại sau.",
+        description: "Không thể kết nối với dịch vụ AI. Hệ thống đang sử dụng chế độ phân tích offline.",
         variant: "destructive",
       });
       setIsLoading(false);
       setResults(["07", "17", "27"]); // Default numbers if API fails
       setInterpretation("Không thể phân tích giấc mơ. Vui lòng thử lại sau.");
+      setUsingFallback(true);
     }
   };
 
@@ -75,7 +99,23 @@ const DreamForm = () => {
 
         {hasSearched && !isLoading && (
           <div className="mt-8 animate-slide-up">
-            <h3 className="text-lg font-bold mb-4">Kết Quả Giải Mã:</h3>
+            <h3 className="text-lg font-bold mb-4 flex items-center">
+              Kết Quả Giải Mã:
+              {usingFallback && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="ml-2 inline-flex items-center text-amber-500">
+                        <Info size={16} />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Đang sử dụng phân tích offline do API Gemini đã đạt giới hạn truy cập</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </h3>
             
             {results.length > 0 ? (
               <div className="bg-white/80 dark:bg-lottery-dark/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -94,7 +134,7 @@ const DreamForm = () => {
                 </div>
                 
                 <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                  Ghi chú: Các con số này được dự đoán dựa trên AI phân tích giấc mơ và có thể thay đổi.
+                  Ghi chú: Các con số này được dự đoán dựa trên {usingFallback ? 'thuật toán phân tích offline' : 'AI Gemini phân tích giấc mơ'} và có thể thay đổi.
                 </p>
               </div>
             ) : (

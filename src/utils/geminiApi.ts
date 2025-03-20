@@ -10,6 +10,38 @@ export interface GeminiResponse {
   numbers: string[];
 }
 
+// Fallback interpretation function when API is unavailable
+const generateFallbackInterpretation = (dreamDescription: string): GeminiResponse => {
+  // Simple algorithm to generate consistent numbers based on dream description
+  let hash = 0;
+  for (let i = 0; i < dreamDescription.length; i++) {
+    hash = ((hash << 5) - hash) + dreamDescription.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Generate 3 numbers between 00-99 based on the hash
+  const number1 = Math.abs(hash % 100).toString().padStart(2, '0');
+  const number2 = Math.abs((hash + 33) % 100).toString().padStart(2, '0');
+  const number3 = Math.abs((hash + 66) % 100).toString().padStart(2, '0');
+  
+  // Simple dream interpretation based on word count
+  const wordCount = dreamDescription.split(/\s+/).length;
+  let interpretation = '';
+  
+  if (wordCount < 5) {
+    interpretation = "Giấc mơ ngắn gọn của bạn thường liên quan đến những mong muốn mãnh liệt trong hiện tại.";
+  } else if (wordCount < 15) {
+    interpretation = "Giấc mơ của bạn phản ánh trạng thái cảm xúc hiện tại và có thể mang đến sự may mắn trong tương lai gần.";
+  } else {
+    interpretation = "Giấc mơ chi tiết này phản ánh sự phức tạp trong tâm trí bạn và những điều sâu sắc từ tiềm thức.";
+  }
+  
+  return {
+    text: interpretation,
+    numbers: [number1, number2, number3]
+  };
+};
+
 /**
  * Interprets a dream using Gemini API and returns lucky numbers
  * @param dreamDescription The user's dream description
@@ -48,10 +80,10 @@ export const interpretDreamWithGemini = async (dreamDescription: string): Promis
       })
     });
 
+    // Handle quota exceeded error (429) or other errors
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Gemini API error:", errorData);
-      throw new Error("Không thể kết nối với dịch vụ AI. Vui lòng thử lại sau.");
+      console.warn(`Gemini API returned status ${response.status}. Using fallback interpretation.`);
+      return generateFallbackInterpretation(dreamDescription);
     }
 
     const data = await response.json();
@@ -70,20 +102,15 @@ export const interpretDreamWithGemini = async (dreamDescription: string): Promis
         };
       } else {
         // Fallback if the response isn't in the expected format
-        return {
-          text: "Không thể phân tích giấc mơ. Vui lòng thử lại với mô tả chi tiết hơn.",
-          numbers: ["07", "17", "27"]
-        };
+        console.warn("Couldn't extract JSON from Gemini response. Using fallback interpretation.");
+        return generateFallbackInterpretation(dreamDescription);
       }
     } catch (parseError) {
       console.error("Error parsing Gemini response:", parseError);
-      return {
-        text: "Không thể phân tích giấc mơ. Vui lòng thử lại với mô tả chi tiết hơn.",
-        numbers: ["07", "17", "27"]
-      };
+      return generateFallbackInterpretation(dreamDescription);
     }
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    throw new Error("Có lỗi xảy ra khi kết nối với dịch vụ AI. Vui lòng thử lại sau.");
+    return generateFallbackInterpretation(dreamDescription);
   }
 };
