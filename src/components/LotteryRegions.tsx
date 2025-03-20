@@ -1,18 +1,18 @@
 
 import { useState } from 'react';
-import LotteryResults from './LotteryResults';
+import MinhNgocLottery from './MinhNgocLottery';
 
 const LotteryRegions = () => {
-  const [activeRegion, setActiveRegion] = useState<'northern' | 'central' | 'southern'>('northern');
+  const [activeRegion, setActiveRegion] = useState<'mien-bac' | 'mien-trung' | 'mien-nam'>('mien-bac');
 
   return (
     <div className="w-full">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <button
-            onClick={() => setActiveRegion('northern')}
+            onClick={() => setActiveRegion('mien-bac')}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'northern'
+              activeRegion === 'mien-bac'
                 ? 'bg-lottery-blue text-white shadow-lg'
                 : 'glass-card hover:bg-lottery-light-blue/20'
             }`}
@@ -20,9 +20,9 @@ const LotteryRegions = () => {
             Miền Bắc
           </button>
           <button
-            onClick={() => setActiveRegion('central')}
+            onClick={() => setActiveRegion('mien-trung')}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'central'
+              activeRegion === 'mien-trung'
                 ? 'bg-lottery-blue text-white shadow-lg'
                 : 'glass-card hover:bg-lottery-light-blue/20'
             }`}
@@ -30,9 +30,9 @@ const LotteryRegions = () => {
             Miền Trung
           </button>
           <button
-            onClick={() => setActiveRegion('southern')}
+            onClick={() => setActiveRegion('mien-nam')}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'southern'
+              activeRegion === 'mien-nam'
                 ? 'bg-lottery-blue text-white shadow-lg'
                 : 'glass-card hover:bg-lottery-light-blue/20'
             }`}
@@ -43,7 +43,7 @@ const LotteryRegions = () => {
       </div>
 
       <div className="w-full max-w-3xl mx-auto">
-        <LotteryResults region={activeRegion} />
+        <MinhNgocLottery region={activeRegion} />
       </div>
     </div>
   );
