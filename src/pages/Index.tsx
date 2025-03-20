@@ -90,50 +90,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-12 bg-lottery-light/70 dark:bg-lottery-dark/40">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-serif font-bold mb-4">Tính Năng Nổi Bật</h2>
-              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                AI Xổ Số cung cấp nhiều công cụ tiện ích giúp người chơi dễ dàng tiếp cận thông tin xổ số
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:shadow-lg animate-slide-up" style={{ animationDelay: '0ms' }}>
-                <div className="w-14 h-14 bg-lottery-blue/20 rounded-full flex items-center justify-center mb-4">
-                  <Calendar className="w-7 h-7 text-lottery-blue" />
-                </div>
-                <h3 className="text-xl font-serif font-bold mb-3">Kết Quả Xổ Số Hàng Ngày</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Cập nhật kết quả xổ số miền Bắc, miền Trung, miền Nam nhanh chóng và chính xác 100%.
-                </p>
-              </div>
-              
-              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:shadow-lg animate-slide-up" style={{ animationDelay: '100ms' }}>
-                <div className="w-14 h-14 bg-lottery-blue/20 rounded-full flex items-center justify-center mb-4">
-                  <Search className="w-7 h-7 text-lottery-blue" />
-                </div>
-                <h3 className="text-xl font-serif font-bold mb-3">Tra Cứu Số Thông Minh</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Dễ dàng kiểm tra xem số của bạn đã trúng ở đài nào, giải nào và khi nào chỉ với vài thao tác.
-                </p>
-              </div>
-              
-              <div className="glass-card p-6 rounded-xl transition-all duration-300 hover:shadow-lg animate-slide-up" style={{ animationDelay: '200ms' }}>
-                <div className="w-14 h-14 bg-lottery-blue/20 rounded-full flex items-center justify-center mb-4">
-                  <Gift className="w-7 h-7 text-lottery-blue" />
-                </div>
-                <h3 className="text-xl font-serif font-bold mb-3">Giải Mã Giấc Mơ</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Chuyển đổi giấc mơ của bạn thành những con số may mắn với công nghệ AI tiên tiến.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Lottery Results Section */}
         <section id="lottery-results" className="py-12 md:py-20 scroll-mt-24">
           <div className="container mx-auto px-4">
