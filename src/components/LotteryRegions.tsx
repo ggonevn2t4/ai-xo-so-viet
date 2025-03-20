@@ -1,50 +1,63 @@
 
 import { useState } from 'react';
 import MinhNgocLottery from './MinhNgocLottery';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const LotteryRegions = () => {
   const [activeRegion, setActiveRegion] = useState<'mien-bac' | 'mien-trung' | 'mien-nam'>('mien-bac');
 
+  const handleTabChange = (value: string) => {
+    setActiveRegion(value as 'mien-bac' | 'mien-trung' | 'mien-nam');
+  };
+
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <button
-            onClick={() => setActiveRegion('mien-bac')}
-            className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'mien-bac'
-                ? 'bg-lottery-blue text-white shadow-lg'
-                : 'glass-card hover:bg-lottery-light-blue/20'
-            }`}
-          >
-            Miền Bắc
-          </button>
-          <button
-            onClick={() => setActiveRegion('mien-trung')}
-            className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'mien-trung'
-                ? 'bg-lottery-blue text-white shadow-lg'
-                : 'glass-card hover:bg-lottery-light-blue/20'
-            }`}
-          >
-            Miền Trung
-          </button>
-          <button
-            onClick={() => setActiveRegion('mien-nam')}
-            className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex-1 max-w-xs w-full ${
-              activeRegion === 'mien-nam'
-                ? 'bg-lottery-blue text-white shadow-lg'
-                : 'glass-card hover:bg-lottery-light-blue/20'
-            }`}
-          >
-            Miền Nam
-          </button>
+      <Tabs 
+        defaultValue="mien-bac" 
+        className="w-full mb-8"
+        onValueChange={handleTabChange}
+      >
+        <div className="flex justify-center mb-4">
+          <TabsList className="w-full max-w-2xl">
+            <TabsTrigger 
+              value="mien-bac" 
+              className="flex-1 text-base py-3"
+            >
+              Miền Bắc
+            </TabsTrigger>
+            <TabsTrigger 
+              value="mien-trung" 
+              className="flex-1 text-base py-3"
+            >
+              Miền Trung
+            </TabsTrigger>
+            <TabsTrigger 
+              value="mien-nam" 
+              className="flex-1 text-base py-3"
+            >
+              Miền Nam
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      <div className="w-full max-w-3xl mx-auto">
-        <MinhNgocLottery region={activeRegion} />
-      </div>
+        <TabsContent value="mien-bac">
+          <div className="w-full max-w-3xl mx-auto">
+            <MinhNgocLottery region="mien-bac" />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="mien-trung">
+          <div className="w-full max-w-3xl mx-auto">
+            <MinhNgocLottery region="mien-trung" />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="mien-nam">
+          <div className="w-full max-w-3xl mx-auto">
+            <MinhNgocLottery region="mien-nam" />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
