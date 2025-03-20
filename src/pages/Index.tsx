@@ -36,8 +36,8 @@ const Index = () => {
         {/* Hero Section */}
         <section className="py-12 md:py-20">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-              <div className="md:w-1/2 animate-slide-up">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="max-w-2xl mx-auto animate-slide-up">
                 <span className="inline-block px-4 py-1 mb-4 bg-lottery-light-blue/30 text-lottery-blue rounded-full text-sm font-medium">
                   AI Xổ Số Việt Nam
                 </span>
@@ -47,7 +47,7 @@ const Index = () => {
                 <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
                   Hệ thống AI tổng hợp kết quả các đài xổ số ở Việt Nam theo từng ngày, giúp người chơi dò kết quả nhanh nhất và truy xuất thông tin chính xác.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link to="/number-search" className="bg-lottery-blue hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center">
                     <Search className="w-5 h-5 mr-2" />
                     Tra Cứu Số
@@ -56,34 +56,6 @@ const Index = () => {
                     <Gift className="w-5 h-5 mr-2" />
                     Giải Mã Giấc Mơ
                   </Link>
-                </div>
-              </div>
-              
-              <div className="md:w-1/2 animate-float">
-                <div className="glass-card p-6 rounded-2xl shadow-glass overflow-hidden">
-                  <div className="bg-lottery-blue/10 rounded-xl p-4 mb-4 flex items-center justify-between">
-                    <span className="font-medium">Kết Quả Hôm Nay</span>
-                    <Calendar className="w-5 h-5 text-lottery-blue" />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Miền Bắc:</span>
-                      <span className="text-lottery-red font-bold">54321</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Miền Trung (Quảng Nam):</span>
-                      <span className="text-lottery-red font-bold">12345</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Miền Nam (TP. HCM):</span>
-                      <span className="text-lottery-red font-bold">12345</span>
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <Link to="#lottery-results" className="text-sm text-lottery-blue hover:underline">
-                      Xem kết quả chi tiết ↓
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
