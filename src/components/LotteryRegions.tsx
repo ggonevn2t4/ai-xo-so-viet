@@ -3,7 +3,7 @@ import { useState } from 'react';
 import MinhNgocLottery from './MinhNgocLottery';
 
 const LotteryRegions = () => {
-  const [activeRegion, setActiveRegion] = useState<'mien-bac' | 'mien-trung' | 'mien-nam'>('mien-bac');
+  const [activeRegion, setActiveRegion] = useState<'mien-bac' | 'mien-trung' | 'mien-nam'>('mien-nam');
 
   return (
     <div className="w-full">
