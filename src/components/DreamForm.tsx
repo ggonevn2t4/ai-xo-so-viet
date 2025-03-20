@@ -1,52 +1,42 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-
-// Dummy data for dream interpretation
-const DREAM_INTERPRETATIONS = {
-  'mèo': ['12', '23', '45'],
-  'chó': ['11', '22', '33'],
-  'cá': ['15', '27', '39'],
-  'rắn': ['19', '29', '49'],
-  'bò': ['07', '17', '71'],
-  'trâu': ['03', '35', '53'],
-  'mưa': ['04', '40', '44'],
-  'nắng': ['05', '50', '55'],
-  'sấm sét': ['06', '60', '66'],
-  'bão': ['08', '80', '88'],
-  'nhà': ['01', '10', '11'],
-  'cây': ['09', '90', '99'],
-  'hoa': ['16', '61', '46'],
-  'người quen': ['28', '82', '38'],
-  'tiền': ['13', '31', '83'],
-};
+import { interpretDreamWithGemini } from '@/utils/geminiApi';
+import { useToast } from '@/components/ui/use-toast';
 
 const DreamForm = () => {
   const [dreamText, setDreamText] = useState('');
   const [results, setResults] = useState<string[]>([]);
+  const [interpretation, setInterpretation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dreamText.trim()) return;
 
     setIsLoading(true);
     setHasSearched(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Look up interpretation in our dummy data
-      const lowerDream = dreamText.toLowerCase();
-      const numbers = Object.keys(DREAM_INTERPRETATIONS).some(key => lowerDream.includes(key))
-        ? Object.keys(DREAM_INTERPRETATIONS)
-            .filter(key => lowerDream.includes(key))
-            .flatMap(key => DREAM_INTERPRETATIONS[key as keyof typeof DREAM_INTERPRETATIONS])
-        : ['07', '17', '27']; // Default numbers if no match
-
-      setResults(numbers);
+    try {
+      // Use Gemini API to interpret the dream
+      const geminiResponse = await interpretDreamWithGemini(dreamText);
+      
+      setResults(geminiResponse.numbers);
+      setInterpretation(geminiResponse.text);
       setIsLoading(false);
-    }, 800);
+    } catch (error) {
+      console.error("Error interpreting dream:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể kết nối với dịch vụ AI. Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      setResults(["07", "17", "27"]); // Default numbers if API fails
+      setInterpretation("Không thể phân tích giấc mơ. Vui lòng thử lại sau.");
+    }
   };
 
   return (
@@ -89,8 +79,9 @@ const DreamForm = () => {
             
             {results.length > 0 ? (
               <div className="bg-white/80 dark:bg-lottery-dark/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                <p className="mb-3">Dựa vào giấc mơ của bạn, đây là các con số may mắn:</p>
+                <p className="mb-3">{interpretation}</p>
                 
+                <p className="font-medium mt-4 mb-2">Các con số may mắn:</p>
                 <div className="flex flex-wrap justify-center gap-3">
                   {results.map((number, index) => (
                     <div 
