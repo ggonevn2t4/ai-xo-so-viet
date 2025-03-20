@@ -1,8 +1,15 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
 }
 
 .logo {
@@ -34,9 +41,48 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1em;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2em;
+  }
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Thêm các responsive utils cho mobile */
+@media (max-width: 768px) {
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mobile-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .mobile-p-small {
+    padding: 0.5rem;
+  }
+  
+  .mobile-gap-small {
+    gap: 0.5rem;
+  }
+  
+  .mobile-text-small {
+    font-size: 0.875rem;
+  }
+}
+
+/* Cập nhật viewport meta để hoạt động chính xác trên tất cả thiết bị */
+@viewport {
+  width: device-width;
+  initial-scale: 1;
 }

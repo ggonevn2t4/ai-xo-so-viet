@@ -29,7 +29,7 @@ const LotteryRegions = () => {
         </p>
       </div>
 
-      <div className={`w-full ${isMobile ? 'px-2' : 'max-w-3xl mx-auto'}`}>
+      <div className={`w-full mx-auto ${isMobile ? '' : 'max-w-4xl'} px-2 md:px-0`}>
         <div className="glass-card p-3 md:p-6 rounded-xl shadow-md">
           <MinhNgocLottery region="mien-nam" />
         </div>
