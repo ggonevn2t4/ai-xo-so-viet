@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type MinhNgocLotteryProps = {
   region: 'mien-bac' | 'mien-trung' | 'mien-nam';
@@ -7,8 +7,11 @@ type MinhNgocLotteryProps = {
 
 const MinhNgocLottery = ({ region }: MinhNgocLotteryProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
+    
     // Add jQuery script
     const jqueryScript = document.createElement('script');
     jqueryScript.src = 'https://www.minhngoc.net.vn/jquery/jquery-1.7.2.js';
@@ -46,6 +49,9 @@ const MinhNgocLottery = ({ region }: MinhNgocLotteryProps) => {
       dataScript.type = 'text/javascript';
       dataScript.src = `https://www.minhngoc.net.vn/getkqxs/${region}.js`;
       dataScript.async = true;
+      dataScript.onload = () => {
+        setIsLoading(false);
+      };
       containerRef.current?.appendChild(dataScript);
     };
 
@@ -61,6 +67,12 @@ const MinhNgocLottery = ({ region }: MinhNgocLotteryProps) => {
 
   return (
     <div className="w-full overflow-x-auto">
+      {isLoading && (
+        <div className="flex justify-center items-center p-8">
+          <div className="w-8 h-8 border-4 border-lottery-blue border-t-transparent rounded-full animate-spin"></div>
+          <span className="ml-3">Đang tải kết quả...</span>
+        </div>
+      )}
       <div ref={containerRef} id="box_kqxs_minhngoc" className="mx-auto"></div>
     </div>
   );
