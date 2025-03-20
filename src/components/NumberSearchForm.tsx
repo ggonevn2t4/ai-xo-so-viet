@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 type SearchResult = {
   date: string;
@@ -9,38 +10,158 @@ type SearchResult = {
   numbers: string;
 };
 
-// Dummy data for search results
-const DUMMY_SEARCH_RESULTS: SearchResult[] = [
-  { date: '10/08/2023', province: 'Miền Bắc', prize: 'Giải Đặc Biệt', numbers: '12345' },
-  { date: '09/08/2023', province: 'TP. HCM', prize: 'Giải Nhất', numbers: '12345' },
-  { date: '08/08/2023', province: 'Đà Nẵng', prize: 'Giải Nhì', numbers: '12345' },
-  { date: '07/08/2023', province: 'Miền Bắc', prize: 'Giải Ba', numbers: '12345' },
-];
+// Function to fetch lottery results data from a JSON file
+const fetchLotteryData = async () => {
+  // In a real app, this would be an API call to your backend
+  try {
+    const response = await fetch('/data/lottery-results.json');
+    if (!response.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching lottery data:', error);
+    return [];
+  }
+};
+
+// Function to search for matching numbers in the lottery results
+const searchLotteryResults = (data: any[], searchNumber: string): SearchResult[] => {
+  if (!data || !Array.isArray(data)) return [];
+  
+  const results: SearchResult[] = [];
+  
+  // Convert search number to string and ensure it's valid
+  const searchPattern = searchNumber.toString().trim();
+  if (searchPattern.length < 2) return [];
+
+  // Search through the data for matching numbers
+  data.forEach(day => {
+    const date = day.date;
+    
+    // Search in Northern region (Miền Bắc)
+    if (day.northern) {
+      // Check special prize
+      if (day.northern.special && day.northern.special.endsWith(searchPattern)) {
+        results.push({
+          date,
+          province: 'Miền Bắc',
+          prize: 'Giải Đặc Biệt',
+          numbers: day.northern.special
+        });
+      }
+      
+      // Check first prize
+      if (day.northern.first && day.northern.first.endsWith(searchPattern)) {
+        results.push({
+          date,
+          province: 'Miền Bắc',
+          prize: 'Giải Nhất',
+          numbers: day.northern.first
+        });
+      }
+      
+      // Check other prizes (arrays)
+      ['second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'].forEach(prizeKey => {
+        if (day.northern[prizeKey] && Array.isArray(day.northern[prizeKey])) {
+          day.northern[prizeKey].forEach((number: string) => {
+            if (number.endsWith(searchPattern)) {
+              results.push({
+                date,
+                province: 'Miền Bắc',
+                prize: getPrizeName(prizeKey),
+                numbers: number
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Search in Central and Southern regions
+    ['central', 'southern'].forEach(region => {
+      if (day[region] && Array.isArray(day[region])) {
+        day[region].forEach(provinceData => {
+          const province = provinceData.province;
+          
+          // Check special prize
+          if (provinceData.special && Array.isArray(provinceData.special)) {
+            provinceData.special.forEach((number: string) => {
+              if (number.endsWith(searchPattern)) {
+                results.push({
+                  date,
+                  province,
+                  prize: 'Giải Đặc Biệt',
+                  numbers: number
+                });
+              }
+            });
+          }
+          
+          // Check other prizes
+          ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth'].forEach(prizeKey => {
+            if (provinceData[prizeKey] && Array.isArray(provinceData[prizeKey])) {
+              provinceData[prizeKey].forEach((number: string) => {
+                if (number.endsWith(searchPattern)) {
+                  results.push({
+                    date,
+                    province,
+                    prize: getPrizeName(prizeKey),
+                    numbers: number
+                  });
+                }
+              });
+            }
+          });
+        });
+      }
+    });
+  });
+  
+  // Sort results by date (newest first)
+  return results.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+};
+
+// Helper function to get prize name in Vietnamese
+const getPrizeName = (prizeKey: string): string => {
+  const prizeNames: Record<string, string> = {
+    'special': 'Giải Đặc Biệt',
+    'first': 'Giải Nhất',
+    'second': 'Giải Nhì',
+    'third': 'Giải Ba',
+    'fourth': 'Giải Tư',
+    'fifth': 'Giải Năm',
+    'sixth': 'Giải Sáu',
+    'seventh': 'Giải Bảy',
+    'eighth': 'Giải Tám'
+  };
+  
+  return prizeNames[prizeKey] || prizeKey;
+};
 
 const NumberSearchForm = () => {
   const [searchNumber, setSearchNumber] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Use React Query to fetch lottery data
+  const { data: lotteryData, isLoading: isDataLoading } = useQuery({
+    queryKey: ['lotteryData'],
+    queryFn: fetchLotteryData,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchNumber.trim() || searchNumber.length < 2) return;
 
-    setIsLoading(true);
     setHasSearched(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      // Filter dummy data based on search number
-      // In a real app, this would be a database or API call
-      const filteredResults = searchNumber.includes('12345') 
-        ? DUMMY_SEARCH_RESULTS 
-        : [];
-      
-      setResults(filteredResults);
-      setIsLoading(false);
-    }, 800);
+    
+    // Search for matching results in the lottery data
+    const searchResults = searchLotteryResults(lotteryData || [], searchNumber);
+    setResults(searchResults);
   };
 
   return (
@@ -77,9 +198,9 @@ const NumberSearchForm = () => {
           <button
             type="submit"
             className="w-full bg-lottery-blue hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
-            disabled={isLoading || searchNumber.length < 2}
+            disabled={isDataLoading || searchNumber.length < 2}
           >
-            {isLoading ? (
+            {isDataLoading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
             ) : (
               <Search className="w-5 h-5 mr-2" />
@@ -88,7 +209,7 @@ const NumberSearchForm = () => {
           </button>
         </form>
 
-        {hasSearched && !isLoading && (
+        {hasSearched && !isDataLoading && (
           <div className="mt-8 animate-slide-up">
             <h3 className="text-lg font-bold mb-4">Kết Quả Tra Cứu: {searchNumber}</h3>
             
